@@ -2,9 +2,9 @@ const connection = require("../db-config");
 const router = require("express").Router();
 
 router.get('/', (req, res) => {
-    connection.query('SELECT * FROM users', (err, result) => {
+    connection.query('SELECT * FROM user', (err, result) => {
       if (err) {
-        res.status(500).send('Error retrieving users from database');
+        res.status(500).send('Error retrieving user from database');
       } else {
         res.json(result);
       }
@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   const userId = req.params.id;
   connection.query(
-    'SELECT * FROM users WHERE id = ?',
+    'SELECT * FROM user WHERE id = ?',
     [userId],
     (err, results) => {
       if (err) {
@@ -28,17 +28,17 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const { username, password, email } = req.body;
+  const { isAdmin, name, lastname, email, phone } = req.body;
   connection.query(
-    'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
-    [username, password, email],
+    'INSERT INTO user (isAdmin, name, lastname, email, phone) VALUES (?, ?, ?, ?, ?)',
+    [isAdmin, name, lastname, email, phone],
     (err, result) => {
       if (err) {
         console.error(err);
         res.status(500).send('Error saving the user');
       } else {
         const id = result.insertId;
-        const createdUser = { id, username, password, email };
+        const createdUser = { id, isAdmin, name, lastname, email, phone };
         res.status(201).json(createdUser);
       }
     }
@@ -49,11 +49,11 @@ router.put('/:id', (req, res) => {
   const userId = req.params.id;
   const db = connection.promise();
   let existingUser = null;
-  db.query('SELECT * FROM users WHERE id = ?', [userId])
+  db.query('SELECT * FROM user WHERE id = ?', [userId])
     .then(([results]) => {
       existingUser = results[0];
       if (!existingUser) return Promise.reject('RECORD_NOT_FOUND');
-      return db.query('UPDATE users SET ? WHERE id = ?', [req.body, userId]);
+      return db.query('UPDATE user SET ? WHERE id = ?', [req.body, userId]);
     })
     .then(() => {
       res.status(200).json({ ...existingUser, ...req.body });
@@ -68,7 +68,7 @@ router.put('/:id', (req, res) => {
 
 router.delete('/:id', (req, res) => {
   connection.query(
-    'DELETE FROM users WHERE id = ?',
+    'DELETE FROM user WHERE id = ?',
     [req.params.id],
     (err, result) => {
       if (err) {
