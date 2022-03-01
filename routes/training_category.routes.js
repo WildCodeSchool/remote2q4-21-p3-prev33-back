@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
 router.get('/:id', (req, res) => {
   const trainingCategoryId = req.params.id;
   connection.query(
-    'SELECT * FROM training category WHERE id = ?',
+    'SELECT * FROM training_category WHERE id = ?',
     [trainingCategoryId],
     (err, results) => {
       if (err) {
@@ -27,18 +27,37 @@ router.get('/:id', (req, res) => {
   );
 });
 
-router.post('/', (req, res) => {
-  const { name, picturepath, training_id } = req.body;
+router.get('/:id/trainings', (req, res) => {
+  const trainingCategoryId = req.params.id;
   connection.query(
-    'INSERT INTO training_category (name, picturepath, training_id) VALUES (?, ?, ?)',
-    [name, picturepath, training_id],
+    'SELECT title, name, image FROM training \
+     INNER JOIN training_category ON training.training_category_id = training_category.id WHERE training_category.id =?;',
+    [trainingCategoryId],
+    (err, results) => {
+      if (err) {
+        res.status(500).send('Error retrieving training from database');
+      } else {
+        if (results.length) res.json(results);
+        else res.status(404).send('training not found');
+      }
+    }
+  );
+});
+
+
+
+router.post('/', (req, res) => {
+  const { name, image,} = req.body;
+  connection.query(
+    'INSERT INTO training_category (name, image) VALUES (?, ?)',
+    [name, image],
     (err, result) => {
       if (err) {
         console.error(err);
         res.status(500).send('Error saving the training category');
       } else {
         const id = result.insertId;
-        const createdtrainingCategory = { id, name, picturepath, training_id};
+        const createdtrainingCategory = { id, name, image};
         res.status(201).json(createdtrainingCategory);
       }
     }

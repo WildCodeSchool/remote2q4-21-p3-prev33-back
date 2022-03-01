@@ -28,17 +28,17 @@ router.get('/:id', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-  const { title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company } = req.body;
+  const { title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company, training_category_id } = req.body;
   connection.query(
-    'INSERT INTO training (title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    [title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company],
+    'INSERT INTO training (title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company, training_category_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    [title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company, training_category_id],
     (err, result) => {
       if (err) {
         console.error(err);
         res.status(500).send('Error saving the training');
       } else {
         const id = result.insertId;
-        const createdtraining = { id, title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company };
+        const createdtraining = { id, title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company, training_category_id };
         res.status(201).json(createdtraining);
       }
     }
