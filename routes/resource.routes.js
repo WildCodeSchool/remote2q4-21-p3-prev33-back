@@ -21,7 +21,7 @@ router.get('/:id', (req, res) => {
         res.status(500).send('Error retrieving resource from database');
       } else {
         if (results.length) res.json(results[0]);
-        else res.status(404).send('Resource not found');
+        else res.status(404).send('resource not found');
       }
     }
   );
@@ -38,8 +38,8 @@ router.post('/', (req, res) => {
         res.status(500).send('Error saving the resource');
       } else {
         const id = result.insertId;
-        const createdResource = { name, training_id };
-        res.status(201).json(createdResource);
+        const createdresource = { id, name, training_id };
+        res.status(201).json(createdresource);
       }
     }
   );
@@ -48,20 +48,20 @@ router.post('/', (req, res) => {
 router.put('/:id', (req, res) => {
   const resourceId = req.params.id;
   const db = connection.promise();
-  let existingResource = null;
+  let existingresource = null;
   db.query('SELECT * FROM resource WHERE id = ?', [resourceId])
     .then(([results]) => {
-      existingResource = results[0];
-      if (!existingResource) return Promise.reject('RECORD_NOT_FOUND');
+      existingresource = results[0];
+      if (!existingresource) return Promise.reject('RECORD_NOT_FOUND');
       return db.query('UPDATE resource SET ? WHERE id = ?', [req.body, resourceId]);
     })
     .then(() => {
-      res.status(200).json({ ...existingResource, ...req.body });
+      res.status(200).json({ ...existingresource, ...req.body });
     })
     .catch((err) => {
       console.error(err);
       if (err === 'RECORD_NOT_FOUND')
-        res.status(404).send(`Resource with id ${resourceId} not found.`);
+        res.status(404).send(`resource with id ${resourceId} not found.`);
       else res.status(500).send('Error updating a resource');
     });
 });
@@ -75,8 +75,8 @@ router.delete('/:id', (req, res) => {
         console.log(err);
         res.status(500).send('Error deleting an resource');
       } else {
-        if (result.affectedRows) res.status(200).send('🎉 Resource deleted!');
-        else res.status(404).send('Resource not found.');
+        if (result.affectedRows) res.status(200).send('🎉 resource deleted!');
+        else res.status(404).send('resource not found.');
       }
     }
   );

@@ -21,25 +21,25 @@ router.get('/:id', (req, res) => {
         res.status(500).send('Error retrieving training from database');
       } else {
         if (results.length) res.json(results[0]);
-        else res.status(404).send('Training not found');
+        else res.status(404).send('training not found');
       }
     }
   );
 });
 
 router.post('/', (req, res) => {
-  const { title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company } = req.body;
+  const { title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company, training_category_id } = req.body;
   connection.query(
-    'INSERT INTO training (title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    [title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company],
+    'INSERT INTO training (title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company, training_category_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    [title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company, training_category_id],
     (err, result) => {
       if (err) {
         console.error(err);
         res.status(500).send('Error saving the training');
       } else {
         const id = result.insertId;
-        const createdTraining = { id, title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company };
-        res.status(201).json(createdTraining);
+        const createdtraining = { id, title, picturepath, prerequisite, duration, trainee, public, final_award, certificate, price, formation_goals, program, instructor, teaching_method, assesment, address_company, training_category_id };
+        res.status(201).json(createdtraining);
       }
     }
   );
@@ -48,20 +48,20 @@ router.post('/', (req, res) => {
 router.put('/:id', (req, res) => {
   const trainingId = req.params.id;
   const db = connection.promise();
-  let existingTraining = null;
+  let existingtraining = null;
   db.query('SELECT * FROM training WHERE id = ?', [trainingId])
     .then(([results]) => {
-      existingTraining = results[0];
-      if (!existingTraining) return Promise.reject('RECORD_NOT_FOUND');
+      existingtraining = results[0];
+      if (!existingtraining) return Promise.reject('RECORD_NOT_FOUND');
       return db.query('UPDATE training SET ? WHERE id = ?', [req.body, trainingId]);
     })
     .then(() => {
-      res.status(200).json({ ...existingTraining, ...req.body });
+      res.status(200).json({ ...existingtraining, ...req.body });
     })
     .catch((err) => {
       console.error(err);
       if (err === 'RECORD_NOT_FOUND')
-        res.status(404).send(`Training with id ${trainingId} not found.`);
+        res.status(404).send(`training with id ${trainingId} not found.`);
       else res.status(500).send('Error updating a training');
     });
 });
@@ -75,8 +75,8 @@ router.delete('/:id', (req, res) => {
         console.log(err);
         res.status(500).send('Error deleting an training');
       } else {
-        if (result.affectedRows) res.status(200).send('🎉 Training deleted!');
-        else res.status(404).send('Training not found.');
+        if (result.affectedRows) res.status(200).send('🎉 training deleted!');
+        else res.status(404).send('training not found.');
       }
     }
   );

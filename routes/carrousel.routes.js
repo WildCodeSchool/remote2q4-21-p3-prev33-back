@@ -21,7 +21,7 @@ router.get('/:id', (req, res) => {
         res.status(500).send('Error retrieving carrousel from database');
       } else {
         if (results.length) res.json(results[0]);
-        else res.status(404).send('Carrousel not found');
+        else res.status(404).send('carrousel not found');
       }
     }
   );
@@ -38,8 +38,8 @@ router.post('/', (req, res) => {
         res.status(500).send('Error saving the carrousel');
       } else {
         const id = result.insertId;
-        const createdCarrousel = { id, title, image };
-        res.status(201).json(createdCarrousel);
+        const createdcarrousel = { id, title, image };
+        res.status(201).json(createdcarrousel);
       }
     }
   );
@@ -48,20 +48,20 @@ router.post('/', (req, res) => {
 router.put('/:id', (req, res) => {
   const carrouselId = req.params.id;
   const db = connection.promise();
-  let existingCarrousel = null;
+  let existingcarrousel = null;
   db.query('SELECT * FROM carrousel WHERE id = ?', [carrouselId])
     .then(([results]) => {
-      existingCarrousel = results[0];
-      if (!existingCarrousel) return Promise.reject('RECORD_NOT_FOUND');
+      existingcarrousel = results[0];
+      if (!existingcarrousel) return Promise.reject('RECORD_NOT_FOUND');
       return db.query('UPDATE carrousel SET ? WHERE id = ?', [req.body, carrouselId]);
     })
     .then(() => {
-      res.status(200).json({ ...existingCarrousel, ...req.body });
+      res.status(200).json({ ...existingcarrousel, ...req.body });
     })
     .catch((err) => {
       console.error(err);
       if (err === 'RECORD_NOT_FOUND')
-        res.status(404).send(`Carrousel with id ${carrouselId} not found.`);
+        res.status(404).send(`carrousel with id ${carrouselId} not found.`);
       else res.status(500).send('Error updating a carrousel');
     });
 });
@@ -75,8 +75,8 @@ router.delete('/:id', (req, res) => {
         console.log(err);
         res.status(500).send('Error deleting an carrousel');
       } else {
-        if (result.affectedRows) res.status(200).send('🎉 Carrousel deleted!');
-        else res.status(404).send('Carrousel not found.');
+        if (result.affectedRows) res.status(200).send('🎉 carrousel deleted!');
+        else res.status(404).send('carrousel not found.');
       }
     }
   );
