@@ -1,7 +1,13 @@
 const connection = require("../db-config");
 const router = require("express").Router();
+const Joi = require('joi');
+const argon2 = require('argon2');
+const { generateJwt } = require('../utils/auth');
+const checkJwt = require('../middlewares/checkJwt');
 
-router.get('/', (req, res) => {
+const { findUserByEmail, insertUser } = require('../models/user');
+
+router.get('/', checkJwt, (req, res) => {
     connection.query('SELECT * FROM user', (err, result) => {
       if (err) {
         res.status(500).send('Error retrieving user from database');
@@ -27,23 +33,83 @@ router.get('/:id', (req, res) => {
   );
 });
 
-router.post('/', (req, res) => {
-  const { isAdmin, name, lastname, email, phone } = req.body;
-  connection.query(
-    'INSERT INTO user (isAdmin, name, lastname, email, phone) VALUES (?, ?, ?, ?, ?)',
-    [isAdmin, name, lastname, email, phone],
-    (err, result) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Error saving the user');
-      } else {
-        const id = result.insertId;
-        const createdUser = { id, isAdmin, name, lastname, email, phone };
-        res.status(201).json(createdUser);
-      }
-    }
-  );
-});
+const userSchema = Joi.object({
+  email : Joi.string().email().required(),
+  password: Joi.string().required()
+})
+
+router.post('/', async (req, res) => {
+  // recupération données requête
+  const { value, error } = userSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json(error);
+  }
+  //vérifie si user existe
+  //await permet d'être sûr d'avoir un retour de vérif user.
+  const [[existingUser]] = await findUserByEmail(value.email);
+  if (existingUser) {
+    return res.status(409).json({
+      message : "l'utilisateur existe déjà",
+    })
+  }
+  // étape de l'ecryptage
+  const hashedPassword = await argon2.hash(value.password);
+  await insertUser(value.email, hashedPassword);
+
+  const jwtKey = generateJwt(value.email);
+  return res.json({
+    credentials: jwtKey
+  })
+})
+
+router.post('/login', async (req, res) => {
+  // on reprend les vérifs de données utilisateur
+  const { value, error } = userSchema.validate(req.body);
+  if (error) {
+    return res.status(400).json(error);
+  }
+
+  const [[existingUser]] = await findUserByEmail(value.email);
+
+  if (!existingUser) {
+    return res.status(403).json({
+      message: 'utilisateur non trouvé ou mot de passe non correspondant au compte'
+    })
+  }
+
+  const verified = await argon2.verify(existingUser.password, value.password)
+
+  if (!verified) {
+    return res.status(403).json({
+      message: 'utilisateur non trouvé ou mot de passe non correspondant au compte'
+    })
+  }
+
+  const jwtKey = generateJwt(value.email);
+  return res.json({
+    credentials: jwtKey
+  })
+})
+
+
+
+// router.post('/', (req, res) => {
+//   const { isAdmin, name, lastname, email, phone } = req.body;
+//   connection.query(
+//     'INSERT INTO user (isAdmin, name, lastname, email, phone) VALUES (?, ?, ?, ?, ?)',
+//     [isAdmin, name, lastname, email, phone],
+//     (err, result) => {
+//       if (err) {
+//         console.error(err);
+//         res.status(500).send('Error saving the user');
+//       } else {
+//         const id = result.insertId;
+//         const createdUser = { id, isAdmin, name, lastname, email, phone };
+//         res.status(201).json(createdUser);
+//       }
+//     }
+//   );
+// });
 
 router.put('/:id', (req, res) => {
   const userId = req.params.id;
