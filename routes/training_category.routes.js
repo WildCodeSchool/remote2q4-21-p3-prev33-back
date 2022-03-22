@@ -101,7 +101,7 @@ router.delete("/:id", (req, res) => {
       } else {
         if (result.affectedRows)
           res.status(200).send("🎉 training category deleted!");
-        else res.status(404).send("training category not found.");
+        else res.status(404).send("Training category not found.");
       }
     }
   );
