@@ -1,11 +1,18 @@
 CREATE TABLE `user` (
-    `id` INT PRIMARY KEY NOT NULL AUTO_INCREMENT,
-    `email` VARCHAR(255) NOT NULL,
-    `password` VARCHAR(255) NOT NULL
+    `id` int PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    `email` VARCHAR(255)  NOT NULL ,
+    `password` VARCHAR(255)  NOT NULL
 );
 
+INSERT INTO user
+VALUES (
+    1,
+    'wcs.groupeprev33@mail.com',
+    'prev33'
+   );
+   
 CREATE TABLE `carrousel` (
-    `id` int NOT NULL AUTO_INCREMENT,
+    `id` INT NOT NULL AUTO_INCREMENT,
     `title` VARCHAR(80)  NOT NULL ,
     `image` VARCHAR(255)  NOT NULL ,
     PRIMARY KEY (
@@ -15,7 +22,7 @@ CREATE TABLE `carrousel` (
 
 CREATE TABLE `training` (
     `id` int NOT NULL AUTO_INCREMENT ,
-    `reference` VARCHAR(10)  NULL ,
+    `reference` VARCHAR(20)  NULL ,
     `title` VARCHAR(150)  NULL ,
     `link` VARCHAR(255)  NULL ,
     `training_category_id` INT NULL ,
@@ -33,27 +40,39 @@ CREATE TABLE `training_category` (
     )
 );
 
+-- CREATE TABLE `resource` (
+--     `id` int NOT NULL AUTO_INCREMENT ,
+--     `name` VARCHAR(80)  NOT NULL ,
+--     `training_id` INT  NOT NULL ,
+--     PRIMARY KEY (
+--         `id`
+--     )
+-- );
+
 ALTER TABLE `training` ADD CONSTRAINT `fk_training_category_id` FOREIGN KEY(`training_category_id`)
 REFERENCES `training_category` (`id`);
+
+-- ALTER TABLE `resource` ADD CONSTRAINT `fk_resource_training_id` FOREIGN KEY(`training_id`)
+-- REFERENCES `training` (`id`);
 
 INSERT INTO `training_category` (name, image)  
 VALUE
 ("Incendie",
 "https://netatmostatic.blob.core.windows.net/static/images/guides/security/fire/solutions/type-of-fire-extinguisher-780w.jpg"),
 ("Sûreté",
-"https://cj-securite.fr/wp-content/uploads/2018/12/rad-sicherheit-responsive-header-personenschutz.jpg"),
+"https://www.soec-conseil.fr/wp-content/uploads/2017/05/plan-de-s%C3%BBret%C3%A9-NB1-400x300.jpg"),
 ("Risque professionnels",
-"https://www.formation-alternance-vendee.com/wp-content/uploads/2021/01/header-sst.jpg"),
+"https://www.agro-media.fr/wp-content/uploads/2017/01/SECURIT%C3%89.png"),
 ("Formation Spécifique",
-"https://images.unsplash.com/photo-1462826303086-329426d1aef5?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"),
+"https://www.instic.fr/uploads/formations/mediums/formation-securite-spectacle-1024x435.png"),
 ("Prévention Incendie",
-"https://images.unsplash.com/photo-1621135366028-8f5de4e817a1?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=687&q=80"),
-("Assistance Sûreté",
-"https://images.unsplash.com/photo-1570044389283-6713c3b1c48b?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=387&q=80"),
-("Assistance Risques Pro",
-"https://images.unsplash.com/photo-1624638760852-8ede1666ab07?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80"),
+"https://netatmostatic.blob.core.windows.net/static/images/guides/security/fire/solutions/type-of-fire-extinguisher-780w.jpg"),
+("Assistance Sûrté",
+"https://www.soec-conseil.fr/wp-content/uploads/2017/05/plan-de-s%C3%BBret%C3%A9-NB1-400x300.jpg"),
+("Assistance Risques Professionnels",
+"https://www.agro-media.fr/wp-content/uploads/2017/01/SECURIT%C3%89.png"),
 ("Conseil",
-"https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80");
+"https://www.form-edit.com/wp-content/uploads/2019/07/examen-conseiller-s%C3%A9curit%C3%A9.jpeg");
 
 INSERT INTO `training` (title, training_category_id) 
 VALUE
@@ -80,11 +99,3 @@ VALUE
 ("Conseils Domaine Risque Professionnels", 8),
 ("Conseils Domaine Incendie", 8),
 ("Conseils Domaine Sûreté", 8);
-
-
-INSERT INTO user
-VALUES (
-    1,
-    'wcs.groupeprev33@gmail.com',
-    'prev33'
-);
