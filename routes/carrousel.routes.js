@@ -1,85 +1,76 @@
-const connection = require("../db-config");
 const router = require("express").Router();
+const multer = require("multer");
+const {
+  findAll,
+  insertCarrousel,
+  deleteCarrousel,
+  findOne,
+} = require("../models/carrousel");
 
-router.get('/', (req, res) => {
-    connection.query('SELECT * FROM carrousel', (err, result) => {
-      if (err) {
-        res.status(500).send('Error retrieving carrousel from database');
-      } else {
-        res.json(result);
-      }
-    });
+const upload = multer({ dest: "uploads/carrousel/" });
+
+router.get("/", async (req, res) => {
+  const [carrousel] = await findAll();
+  res.json(carrousel);
+});
+
+router.get("/:id", async (req, res) => {
+  const carrouselId = await findOne(req.params.id);
+  res.json(carrouselId);
+});
+
+router.post("/", upload.single("image"), async (req, res) => {
+  const [{ insertId: id }] = await insertCarrousel(req.body, req.file.path);
+  return res.json({
+    ...req.body,
+    id,
+    image: req.file.filename,
   });
-
-router.get('/:id', (req, res) => {
-  const carrouselId = req.params.id;
-  connection.query(
-    'SELECT * FROM carrousel WHERE id = ?',
-    [carrouselId],
-    (err, results) => {
-      if (err) {
-        res.status(500).send('Error retrieving carrousel from database');
-      } else {
-        if (results.length) res.json(results[0]);
-        else res.status(404).send('carrousel not found');
-      }
-    }
-  );
 });
 
-router.post('/', (req, res) => {
-  const { title, image } = req.body;
-  connection.query(
-    'INSERT INTO carrousel (title, image) VALUES (?, ?)',
-    [title, image],
-    (err, result) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Error saving the carrousel');
-      } else {
-        const id = result.insertId;
-        const createdcarrousel = { id, title, image };
-        res.status(201).json(createdcarrousel);
-      }
-    }
-  );
+router.delete("/:id", async (req, res) => {
+  const carrouselId = await deleteCarrousel(req.params.id);
+  res.json(carrouselId);
 });
 
-router.put('/:id', (req, res) => {
+router.put("/:id", (req, res) => {
   const carrouselId = req.params.id;
   const db = connection.promise();
   let existingcarrousel = null;
-  db.query('SELECT * FROM carrousel WHERE id = ?', [carrouselId])
+  db.query("SELECT * FROM carrousel WHERE id = ?", [carrouselId])
     .then(([results]) => {
       existingcarrousel = results[0];
-      if (!existingcarrousel) return Promise.reject('RECORD_NOT_FOUND');
-      return db.query('UPDATE carrousel SET ? WHERE id = ?', [req.body, carrouselId]);
+      if (!existingcarrousel) return Promise.reject("RECORD_NOT_FOUND");
+      return db.query("UPDATE carrousel SET ? WHERE id = ?", [
+        req.body,
+        carrouselId,
+      ]);
     })
     .then(() => {
       res.status(200).json({ ...existingcarrousel, ...req.body });
     })
     .catch((err) => {
       console.error(err);
-      if (err === 'RECORD_NOT_FOUND')
+      if (err === "RECORD_NOT_FOUND")
         res.status(404).send(`carrousel with id ${carrouselId} not found.`);
-      else res.status(500).send('Error updating a carrousel');
+      else res.status(500).send("Error updating a carrousel");
     });
 });
 
-router.delete('/:id', (req, res) => {
-  connection.query(
-    'DELETE FROM carrousel WHERE id = ?',
-    [req.params.id],
-    (err, result) => {
-      if (err) {
-        console.log(err);
-        res.status(500).send('Error deleting an carrousel');
-      } else {
-        if (result.affectedRows) res.status(200).send('🎉 carrousel deleted!');
-        else res.status(404).send('carrousel not found.');
-      }
-    }
-  );
-});
+// router.delete("/:id", (req, res) => {
+//   connection.query(
+//     "DELETE FROM carrousel WHERE id = ?",
+//     [req.params.id],
+//     (err, result) => {
+//       if (err) {
+//         console.log(err);
+//         res.status(500).send("Error deleting an carrousel");
+//       } else {
+//         if (result.affectedRows) res.status(200).send("🎉 carrousel deleted!");
+//         else res.status(404).send("carrousel not found.");
+//       }
+//     }
+//   );
+// });
 
 module.exports = router;
