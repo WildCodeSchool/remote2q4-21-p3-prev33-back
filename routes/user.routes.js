@@ -81,7 +81,7 @@ router.post("/login", async (req, res) => {
   if (!existingUser) {
     return res.status(403).json({
       message:
-        "Utilisateur non trouvé ou le mot de passe ne correspond au compte",
+        "User non trouvé ou le mot de passe ne correspond au compte",
     });
   }
 
@@ -90,7 +90,7 @@ router.post("/login", async (req, res) => {
   if (!verified) {
     return res.status(403).json({
       message:
-        "Utilisateur non trouvé ou le mot de passe ne correspond au compte",
+        "User non trouvé ou le mot de passe ne correspond au compte",
     });
   }
 
