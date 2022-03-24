@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const multer = require("multer");
-const fs = require("fs");
+// const fs = require("fs");
 
 const {
   findAll,
@@ -32,11 +32,7 @@ router.post("/", upload.single("image"), async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   const carrouselId = await deleteCarrousel(req.params.id);
-  fs.unlink(req.file.filename, (err) => {
-    if (err) throw err;
-    console.log("image supprimée");
-    res.json(carrouselId);
-  });
+  res.json(carrouselId);
 });
 
 // router.put("/:id", (req, res) => {
