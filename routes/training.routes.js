@@ -27,6 +27,22 @@ router.get('/:id', (req, res) => {
   );
 });
 
+router.get('/training/:title', (req, res) => {
+  const trainingTitle = req.params.title;
+  connection.query(
+    'SELECT * FROM training WHERE title= ?',
+    [trainingTitle],
+    (err, results) => {
+      if (err) {
+        res.status(500).send('Error retrieving training title from database');
+      } else {
+        if (results.length) res.json(results[0]);
+        else res.status(404).send('Training title not found');
+      }
+    }
+  );
+});
+
 router.post('/', (req, res) => {
   const { reference, title, link, training_category_id } = req.body;
   connection.query(
