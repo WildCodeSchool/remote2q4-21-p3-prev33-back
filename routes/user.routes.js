@@ -80,8 +80,7 @@ router.post("/login", async (req, res) => {
 
   if (!existingUser) {
     return res.status(403).json({
-      message:
-        "User non trouvé ou le mot de passe ne correspond au compte",
+      message: "User non trouvé ou le mot de passe ne correspond au compte",
     });
   }
 
@@ -89,8 +88,7 @@ router.post("/login", async (req, res) => {
 
   if (!verified) {
     return res.status(403).json({
-      message:
-        "User non trouvé ou le mot de passe ne correspond au compte",
+      message: "User non trouvé ou le mot de passe ne correspond au compte",
     });
   }
 
@@ -99,27 +97,6 @@ router.post("/login", async (req, res) => {
     credentials: jwtKey,
   });
 });
-
-// router.put("/:id", (req, res) => {
-//   const userId = req.params.id;
-//   const db = connection.promise();
-//   let existingUser = null;
-//   db.query("SELECT * FROM user WHERE id = ?", [userId])
-//     .then(([results]) => {
-//       existingUser = results[0];
-//       if (!existingUser) return Promise.reject("RECORD_NOT_FOUND");
-//       return db.query("UPDATE user SET ? WHERE id = ?", [req.body, userId]);
-//     })
-//     .then(() => {
-//       res.status(200).json({ ...existingUser, ...req.body });
-//     })
-//     .catch((err) => {
-//       console.error(err);
-//       if (err === "RECORD_NOT_FOUND")
-//         res.status(404).send(`User with id ${userId} not found.`);
-//       else res.status(500).send("Error updating a user");
-//     });
-// });
 
 router.delete("/:id", (req, res) => {
   connection.query(
