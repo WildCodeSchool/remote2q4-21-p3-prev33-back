@@ -5,7 +5,20 @@ const fs = require("fs");
 
 const { findAll, findOne, insertFile, deleteFile } = require("../models/files");
 
-const upload = multer({ dest: "uploads/files/" });
+const MIME_TYPES = {
+  "application/pdf": "pdf",
+};
+
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, "uploads/files/");
+  },
+  filename: (req, file, callback) => {
+    const name = file.originalname.split(" ").join("_");
+    const extension = MIME_TYPES[file.mimetype];
+    callback(null, `${name}_${Date.now()}.${extension}`);
+  },
+});
 
 router.get("/", async (req, res) => {
   const [training] = await findAll();
@@ -33,7 +46,7 @@ router.get("/training/:title", (req, res) => {
   );
 });
 
-router.post("/", upload.single("link"), async (req, res) => {
+router.post("/", multer({ storage }).single("link"), async (req, res) => {
   const [{ insertId: id }] = await insertFile(req.body, req.file.path);
   return res.json({
     ...req.body,
