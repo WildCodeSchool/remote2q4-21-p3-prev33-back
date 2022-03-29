@@ -32,7 +32,6 @@ router.post("/", upload.single("image"), async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
   const carrouselId = await findOne(req.params.id).then((carrousel) => {
-    console.log(carrousel.image);
     fs.unlink(`${carrousel.image}`, () => {
       const carrouselId = deleteCarrousel(req.params.id);
       res.json(carrouselId);
