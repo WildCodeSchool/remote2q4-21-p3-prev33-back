@@ -1,3 +1,4 @@
+const connection = require("../db-config");
 const router = require("express").Router();
 const multer = require("multer");
 const fs = require("fs");
