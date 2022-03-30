@@ -9,7 +9,22 @@ const {
   findOne,
 } = require("../models/carrousel");
 
-const upload = multer({ dest: "uploads/carrousel/" });
+const MIME_TYPES = {
+  "image/jpg": "jpg",
+  "image/jpeg": "jpg",
+  "image/png": "png",
+};
+
+const storage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, "uploads/carrousel/");
+  },
+  filename: (req, file, callback) => {
+    const name = file.originalname.split(" ").join("_");
+    const extension = MIME_TYPES[file.mimetype];
+    callback(null, `${name}_${Date.now()}.${extension}`);
+  },
+});
 
 router.get("/", async (req, res) => {
   const [carrousel] = await findAll();
@@ -21,7 +36,7 @@ router.get("/:id", async (req, res) => {
   res.json(carrouselId);
 });
 
-router.post("/", upload.single("image"), async (req, res) => {
+router.post("/", multer({ storage }).single("image"), async (req, res) => {
   const [{ insertId: id }] = await insertCarrousel(req.body, req.file.path);
   return res.json({
     ...req.body,
