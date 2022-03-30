@@ -15,7 +15,7 @@ const insertFile = ({ reference, title, training_category_id }, link) => {
   return connection
     .promise()
     .query(
-      "INSERT INTO training (`reference`, `title`, `link`, `training_category_id`) VALUES (?, ?, ?, ?)",
+      "INSERT INTO training (`reference`, `title`, `link`, `training_category_id`) VALUES (?, ?, ?,?)",
       [reference, title, link, training_category_id]
     );
 };
