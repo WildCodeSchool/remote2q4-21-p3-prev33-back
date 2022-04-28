@@ -4,13 +4,6 @@ CREATE TABLE `user` (
     `password` VARCHAR(255)  NOT NULL
 );
 
-INSERT INTO user
-VALUES (
-    1,
-    'wcs.groupeprev33@mail.com',
-    'prev33'
-   );
-   
 CREATE TABLE `carrousel` (
     `id` INT NOT NULL AUTO_INCREMENT,
     `title` VARCHAR(80)  NOT NULL ,
@@ -40,13 +33,16 @@ CREATE TABLE `training` (
     )
 );
 
-
-
-
 ALTER TABLE `training` ADD CONSTRAINT `fk_training_category_id` FOREIGN KEY(`training_category_id`)
 REFERENCES `training_category` (`id`);
 
-
+INSERT INTO user
+VALUES (
+    1,
+    'wcs.groupeprev33@mail.com',
+    'prev33'
+   );
+   
 INSERT INTO `training_category` (name, image)  
 VALUE
 ("Incendie",
