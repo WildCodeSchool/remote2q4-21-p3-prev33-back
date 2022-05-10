@@ -1,7 +1,6 @@
 const connection = require("../db-config");
 const router = require("express").Router();
 const Joi = require("joi");
-const argon2 = require("argon2");
 const { generateJwt } = require("../utils/auth");
 const checkJwt = require("../middlewares/checkJwt");
 
@@ -55,8 +54,8 @@ router.post("/", async (req, res) => {
   }
 
   // etape de l'encryptage
-  const hashedPassword = await argon2.hash(value.password);
-  await insertUser(value.email, hashedPassword);
+  // const hashedPassword = await argon2.hash(value.password);
+  await insertUser(value.email, value.password);
 
   const jwtKey = generateJwt(value.email);
   return res.json({
@@ -84,13 +83,13 @@ router.post("/login", async (req, res) => {
     });
   }
 
-  const verified = await argon2.verify(existingUser.password, value.password);
+  // const verified = await argon2.verify(existingUser.password, value.password);
 
-  if (!verified) {
-    return res.status(403).json({
-      message: "User non trouvé ou le mot de passe ne correspond au compte",
-    });
-  }
+  // if (!verified) {
+  //   return res.status(403).json({
+  //     message: "User non trouvé ou le mot de passe ne correspond au compte",
+  //   });
+  // }
 
   const jwtKey = generateJwt(value.email);
   return res.json({
